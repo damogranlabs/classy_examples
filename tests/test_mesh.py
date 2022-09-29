@@ -27,11 +27,11 @@ class TestMesh(FixturedTestCase):
         mesh = Mesh()
 
         v1 = Vertex([0, 0, 0])
-        v1.mesh_index = 0
+        v1.index = 0
         mesh.vertices.append(v1)
 
         v2 = Vertex([1, 0, 0])
-        v2.mesh_index = 1
+        v2.index = 1
         mesh.vertices.append(v2)
 
         e = Edge(0, 1, [0.5, 0.1, 0])
@@ -44,7 +44,7 @@ class TestMesh(FixturedTestCase):
         # add a new vertex: find_edge shouldn't find anything
         # related to this vertex
         v3 = Vertex([1, 1, 0])
-        v3.mesh_index = 2
+        v3.index = 2
         mesh.vertices.append(v3)
         
         self.assertIsNone(mesh.find_edge(v2, v3))

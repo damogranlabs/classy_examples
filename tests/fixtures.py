@@ -72,14 +72,14 @@ class FixturedTestCase(unittest.TestCase):
 
         # block 0 has curved edges of all types
         self.block_0_edges = [
-            Edge(0, 1, [0.5, -0.25, 0]), # arc edge
-            Edge(1, 2, [[1.1, 0.25, 0], [1.05, 0.5, 0], [1.1, 0.75, 0]]), # spline edge
+            [0, 1, [0.5, -0.25, 0]], # arc edge
+            [1, 2, [[1.1, 0.25, 0], [1.05, 0.5, 0], [1.1, 0.75, 0]]], # spline edge
         ]
 
         self.block_1_edges = [
             # additional edge in block 2 that must not be included (already in block_1_edges)
-            Edge(3, 0, [0.5, -0.1, 1]),
-            Edge(0, 1, [1.5, 0, 0]) # collinear point; invalid edge must be dropped
+            [3, 0, [0.5, -0.1, 1]],
+            [0, 1, [1.5, 0, 0]] # collinear point; invalid edge must be dropped
         ]
 
         # the most low-level way of creating a block is from 'raw' points

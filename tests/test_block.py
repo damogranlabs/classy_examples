@@ -22,12 +22,45 @@ class TestBlock(FixturedTestCase, ExecutedTestsBase):
             "hex  ( 0 1 2 3 4 5 6 7 )  (6 6 7)  simpleGrading (1 1 1) // 0 Test"
         )
 
+    def test_is_orphan(self):
+        block = Block.create_from_points(self.block_0_points)
+        self.assertTrue(block.is_orphan)
+
+    def test_is_not_orphan(self):
+        self.assertFalse(self.block_0.is_orphan)
+
     def test_is_grading_defined(self):
         self.mesh.prepare_data()
         self.assertTrue(self.block_1.is_grading_defined)
 
         self.block_1.grading[0] = Grading()
         self.assertFalse(self.block_1.is_grading_defined)
+
+    def test_get_edge(self):
+        expected_edge = self.block_0.edges[0]
+        self.assertEqual(
+            expected_edge, self.block_0.get_edge(
+                self.block_0.vertices[0],
+                self.block_0.vertices[1]
+            )
+        )
+
+    def test_get_edge_invert(self):
+        expected_edge = self.block_0.edges[0]
+        self.assertEqual(
+            expected_edge, self.block_0.get_edge(
+                self.block_0.vertices[1],
+                self.block_0.vertices[0]
+            )
+        )
+
+    def test_get_edge_fail(self):
+        self.assertIsNone(
+            self.block_0.get_edge(
+                self.block_0.vertices[0],
+                self.block_0.vertices[2]
+            )
+        )
    
     def test_face_format(self):
         """ the correct face format for blockMeshDict """
@@ -64,28 +97,20 @@ class TestBlock(FixturedTestCase, ExecutedTestsBase):
 
     def test_straight_block_size(self):
         """ length of a straight block edge """
-        self.mesh.prepare_data()
-
         self.assertEqual(self.block_1.get_size(2), 1)
     
     def test_arc_block_size(self):
         """ length of a curved block edge (two segments) """
-        self.mesh.prepare_data()
-
         self.assertAlmostEqual(
             self.block_0.get_size(0), 1.0397797556255037
         )
 
     def test_spline_block_size(self):
         """ length of a spline block edge (three or more segments) """
-        self.mesh.prepare_data()
-
         self.assertAlmostEqual(self.block_0.get_size(1), 1.0121046080181824)
 
     def test_axis_from_pair(self):
         """ return the correct pairs of points along each axis """
-        self.mesh.prepare_data()
-
         pairs = [
             [[0, 1], [3, 2], [4, 5], [7, 6]],
             [[0, 3], [1, 2], [5, 6], [4, 7]],
@@ -96,8 +121,8 @@ class TestBlock(FixturedTestCase, ExecutedTestsBase):
             for j in range(4):
                 pair = pairs[i][j]
 
-                v1 = self.block_0.vertices[pair[0]].mesh_index
-                v2 = self.block_0.vertices[pair[1]].mesh_index
+                v1 = self.block_0.vertices[pair[0]].index
+                v2 = self.block_0.vertices[pair[1]].index
 
                 axis, direction = self.block_0.get_axis_from_pair([v1, v2])
                 self.assertEqual(axis, i)
@@ -129,7 +154,6 @@ class TestBlock(FixturedTestCase, ExecutedTestsBase):
 
         mesh = Mesh()
         mesh.add_block(block)
-        mesh.prepare_data()
 
         self.assertEqual(len(block.get_axis_vertex_pairs(0)), 2)
         self.assertEqual(len(block.get_axis_vertex_pairs(1)), 4)
@@ -179,37 +203,42 @@ class TestBlock(FixturedTestCase, ExecutedTestsBase):
             1/block_1.grading[2].divisions[0][2])
         #self.run_and_check()
 
-    def test_block_project_face(self):
-        self.mesh.prepare_data()
-
+    def test_block_project_face_only(self):
         self.block_0.project_face('bottom', 'terrain')
-        self.block_0.project_face('left', 'building')
+        self.block_0.project_face('left', 'building', edges=False)
 
         expected_list = [
-            ['bottom', 'terrain'],
-            ['left', 'building']
+           ['bottom', 'terrain'],
+           ['left', 'building']
         ]
         
         self.assertListEqual(
-            expected_list, self.block_0.faces
+           expected_list, self.block_0.faces
         )
+
+    def test_block_project_face_with_edges_exception(self):
+        with self.assertRaises(Exception):
+            self.block_0.project_face('bottom', 'terrain', edges=True)
 
     def test_block_project_face_edges(self):
         # add 4 'project' edges to mesh
-        self.block_2.project_face('back', 'terrain', edges=True)
-        self.mesh.prepare_data()
+        # create a new 'mesh' object because edges can't be added
+        # after blocks
+        block = Block.create_from_points(self.block_0_points)
+        block.project_face('back', 'terrain', edges=True)
+
+        mesh = Mesh()
+        mesh.add(block)
 
         n_project = 0
 
-        for e in self.mesh.edges:
+        for e in mesh.edges:
             if e.type == 'project':
                 n_project += 1
 
         self.assertEqual(n_project, 4)
 
     def test_block_get_face(self):
-        self.mesh.prepare_data()
-
         # blocks 0 and 1 share faces;
         # block_0-right == block_1-left;
 
@@ -230,8 +259,6 @@ class TestBlock(FixturedTestCase, ExecutedTestsBase):
         )
 
     def test_block_get_faces(self):
-        self.mesh.prepare_data()
-
         # block_2's patches
         # self.block_2.set_patch(['bottom', 'top', 'left', 'right'], 'walls')
         self.assertListEqual(
@@ -244,26 +271,26 @@ class TestBlock(FixturedTestCase, ExecutedTestsBase):
             [[2, 9, 12, 13], [6, 11, 14, 15], [6, 2, 13, 15], [11, 9, 12, 14]]
         )
 
-    def test_block_find_edge(self):
-        self.mesh.prepare_data()
-
-        # block_0's first edge is curved
-        self.assertIsNotNone(self.block_0.find_edge(0, 1))
-        self.assertIsNone(self.block_0.find_edge(2, 3))
-
-    def test_block_project_edge(self):
+    def test_block_project_edge_late(self):
         # this geometry doesn't exist but classy_blocks don't care
-        self.block_0.project_edge(2, 3, 'test')
+        block = Block.create_from_points(self.block_0_points)
+        block.project_edge(2, 3, 'test')
+        
+        mesh = Mesh()
+        mesh.add(block)
 
-        self.mesh.prepare_data()
-        self.assertEqual(self.mesh.edges[-1].type, 'project')
-    
+        self.assertEqual(mesh.edges[0].type, 'project')
+
     def test_block_project_edge_double(self):
         # projecting an existing edge should not work
-        self.block_0.project_edge(0, 1, 'test')
-        self.mesh.prepare_data()
+        block = Block.create_from_points(self.block_0_points)
+        block.project_edge(2, 3, 'test')
+        block.project_edge(2, 3, 'test')
+        
+        mesh = Mesh()
+        mesh.add(block)
 
-        self.assertNotEqual(self.mesh.edges[-1].type, 'project')
+        self.assertEqual(len(mesh.edges), 1)
 
 
 class BlockSizingTests(unittest.TestCase):
@@ -286,7 +313,6 @@ class BlockSizingTests(unittest.TestCase):
 
         self.mesh = Mesh()
         self.mesh.add_block(self.block)
-        self.mesh.prepare_data()
 
     def test_min_block_size(self):
         self.assertAlmostEqual(self.block.get_size(0, take='min'), 1)

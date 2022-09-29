@@ -4,7 +4,7 @@ import os
 # uncomment the example you wish to run
 
 # primitive
-# from examples.primitive import from_points as example
+from examples.primitive import from_points as example
 
 # operations
 # from examples.operation import extrude as example
@@ -42,14 +42,14 @@ import os
 # from examples.advanced import merged as example
 
 # objects
-from examples.objects import t_pipe as example
+# from examples.objects import t_pipe as example
 
-try:
-    geometry = example.geometry
-except:
-    geometry = None
+# try:
+#     geometry = example.geometry
+# except:
+#     geometry = None
 
 mesh = example.get_mesh()
 
-mesh.write(output_path=os.path.join('case', 'system', 'blockMeshDict'), geometry=geometry)
+mesh.write(output_path=os.path.join('case', 'system', 'blockMeshDict'))
 os.system("case/Allrun.mesh")
