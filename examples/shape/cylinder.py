@@ -22,4 +22,11 @@ def get_mesh():
     mesh = Mesh()
     mesh.add(cylinder)
 
+    # vertex = mesh.find_vertex(cylinder.sketch_2.core_faces[0].vertices[0])
+    # vertex.translate([0.5, 0.5, 0])
+
+    # for face in cylinder.sketch_2.shell_faces:
+    #     vertex = mesh.find_vertex(face.vertices[0])
+    #     vertex.translate([0.5, 0.5, 0])
+    
     return mesh

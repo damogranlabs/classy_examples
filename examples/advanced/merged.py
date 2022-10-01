@@ -13,7 +13,7 @@ def get_mesh():
     coarse_box.set_patch('top', 'box_slave')
     mesh.add(coarse_box)
 
-    fine_box = coarse_box.translate([0, 0, 1])
+    fine_box = coarse_box.copy().translate([0, 0, 1])
     for i in range(3):
         fine_box.chop(i, count=25)
     fine_box.set_patch('bottom', 'box_master')

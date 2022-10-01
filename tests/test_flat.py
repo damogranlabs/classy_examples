@@ -133,7 +133,7 @@ class FaceTests(unittest.TestCase):
 
         scaled_face = original_face.copy().scale(2, origin=[0, 0, 0])
 
-        self.assertListEqual(scaled_face.edges[0].tolist(), [1, -0.5, 0])
+        np.testing.assert_almost_equal(scaled_face.get_edge_data()[0], [1, -0.5, 0])
 
     def test_invert(self):
         face = Face(self.points)

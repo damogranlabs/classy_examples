@@ -39,17 +39,14 @@ from examples.primitive import from_points as example
 # advanced
 # from examples.advanced import project as example # projection to STL surface
 # from examples.advanced import sphere as example # flow around sphere
-# from examples.advanced import merged as example
+from examples.advanced import merged as example
 
 # objects
 # from examples.objects import t_pipe as example
 
-# try:
-#     geometry = example.geometry
-# except:
-#     geometry = None
-
 mesh = example.get_mesh()
 
+
 mesh.write(output_path=os.path.join('case', 'system', 'blockMeshDict'))
-os.system("case/Allrun.mesh")
+os.system('blockMesh -case case')
+#os.system("case/Allrun.mesh")
