@@ -16,7 +16,7 @@ import os
 # shapes
 # from examples.shape import elbow as example
 # from examples.shape import frustum as example
-# from examples.shape import cylinder as example
+from examples.shape import cylinder as example
 # from examples.shape import revolved_ring as example
 # from examples.shape import extruded_ring as example
 # from examples.shape import hemisphere as example
@@ -42,14 +42,14 @@ import os
 # from examples.advanced import merged as example
 
 # objects
-from examples.objects import t_pipe as example
+#from examples.objects import t_pipe as example
 
-try:
-    geometry = example.geometry
-except:
-    geometry = None
+# try:
+#     geometry = example.geometry
+# except:
+#     geometry = None
 
 mesh = example.get_mesh()
 
-mesh.write(output_path=os.path.join('case', 'system', 'blockMeshDict'), geometry=geometry)
+mesh.write(output_path=os.path.join('case', 'system', 'blockMeshDict'), debug=False)
 os.system("case/Allrun.mesh")
