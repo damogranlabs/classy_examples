@@ -16,7 +16,7 @@ import os
 # shapes
 # from examples.shape import elbow as example
 # from examples.shape import frustum as example
-from examples.shape import cylinder as example
+# from examples.shape import cylinder as example
 # from examples.shape import revolved_ring as example
 # from examples.shape import extruded_ring as example
 # from examples.shape import hemisphere as example
@@ -25,7 +25,7 @@ from examples.shape import cylinder as example
 # from examples.shape import frustum_wall as example
 
 # chaining
-# from examples.chaining import tank as example
+from examples.chaining import tank as example
 # from examples.chaining import test_tube as example
 # from examples.chaining import venturi_tube as example
 # from examples.chaining import orifice_plate as example
@@ -44,12 +44,12 @@ from examples.shape import cylinder as example
 # objects
 #from examples.objects import t_pipe as example
 
-# try:
-#     geometry = example.geometry
-# except:
-#     geometry = None
+try:
+    geometry = example.geometry
+except:
+    geometry = None
 
 mesh = example.get_mesh()
 
-mesh.write(output_path=os.path.join('case', 'system', 'blockMeshDict'), debug=False)
+mesh.write(output_path=os.path.join('case', 'system', 'blockMeshDict'), geometry=geometry, debug=False)
 os.system("case/Allrun.mesh")
