@@ -1,6 +1,8 @@
 # classy_examples
 Example project, cases and tests for [classy_blocks](https://github.com/damogranlabs/classy_blocks).
 
+> NOTE! This is an archived version that does not work with version 1 and newer. Please refer to readme and examples in the classy_blocks repository.
+
 # Usage
 1. Prerequisites
     1. OpenFOAM (just about any version)
